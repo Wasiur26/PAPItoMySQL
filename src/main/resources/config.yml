@@ -1,0 +1,11 @@
+mysql:
+  host: localhost
+  port: 3306
+  database: test
+  username: username
+  password: password
+  tablename: tablename
+
+placeholders:
+  playerName: %player_name%
+  playerUUID: %player_uuid%
