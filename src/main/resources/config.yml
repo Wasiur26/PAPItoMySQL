@@ -6,6 +6,11 @@ mysql:
   password: password
   tablename: tablename
 
+#The placeholders to save in the database.
+#For name: value, the name will be used in the sql table and the value will be the placeholder to replace.
+
 placeholders:
-  playerName: %player_name%
-  playerUUID: %player_uuid%
+  #mysql_column_name: 'placeholder'
+  player_name: '%player_name%'
+  player_uuid: '%player_uuid%'
+

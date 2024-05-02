@@ -4,6 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -76,16 +77,16 @@ public final class PAPItoMySQL extends JavaPlugin implements Listener{
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         getLogger().log(Level.INFO, "Player joined: " + event.getPlayer().getName());
-        handlePlayerData(String.valueOf(event.getPlayer().getUniqueId()), event.getPlayer().getName());
+        handlePlayerData(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         getLogger().log(Level.INFO, "Player quit: " + event.getPlayer().getName());
-        handlePlayerData(String.valueOf(event.getPlayer().getUniqueId()), event.getPlayer().getName());
+        handlePlayerData(event.getPlayer());
     }
 
-    public void handlePlayerData(String playerUUID, String playerName){
+    public void handlePlayerData(Player player){
         FileConfiguration config = getConfig();
         ConfigurationSection placeholders = config.getConfigurationSection("placeholders");
         if (placeholders == null) {
@@ -93,12 +94,16 @@ public final class PAPItoMySQL extends JavaPlugin implements Listener{
             return;
         }
         for(String placeholder : placeholders.getKeys(false)) {
-            String value = PlaceholderAPI.setPlaceholders(getServer().getPlayer(playerUUID), "%" + placeholder + "%");
+            String value = config.getString("placeholders." + placeholder);
+            getLogger().log(Level.INFO, value);
+            assert value != null;
+            value = PlaceholderAPI.setPlaceholders(player, value);
+            getLogger().log(Level.INFO, value);
             try (PreparedStatement statement = connection.prepareStatement("INSERT INTO " + tablename + " (uuid, name, " + placeholder + ") VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name = ?, " + placeholder + " = ?")) {
-                statement.setString(1, playerUUID);
-                statement.setString(2, playerName);
+                statement.setString(1, player.getUniqueId().toString());
+                statement.setString(2, player.getName());
                 statement.setString(3, value);
-                statement.setString(4, playerName);
+                statement.setString(4, player.getName());
                 statement.setString(5, value);
                 statement.executeUpdate();
             } catch (SQLException e) {
