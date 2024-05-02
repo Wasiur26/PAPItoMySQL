@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="PAPItoMySql-0.1">
-    <output-path>$PROJECT_DIR$/out/artifacts/PAPItoMySql_0_1</output-path>
-    <root id="archive" name="PAPItoMySql-0.1.jar">
-      <element id="module-output" name="PAPItoMySQL" />
-    </root>
-  </artifact>
-</component>
